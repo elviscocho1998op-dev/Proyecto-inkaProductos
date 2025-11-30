@@ -30,20 +30,20 @@ public class UsuarioService {
 
     @Transactional
     public Usuario guardar(Usuario usuario) {
-        // 1. LOGICA DE CONTRASEÑA (Para Editar)
+        // 1. LOGICA DE CONTRASEÑA (Para Editar)(pendiente correcion)
         if (usuario.getUsuarioId() != null) {
-            // Buscamos el usuario original en la BD
+
             Usuario existente = usuarioRepository.findById(usuario.getUsuarioId()).orElseThrow();
 
-            // Si el campo password está vacío, MANTENEMOS la contraseña antigua
+
             if (usuario.getPassword() == null || usuario.getPassword().isEmpty()) {
                 usuario.setPasswordHash(existente.getPasswordHash());
             } else {
-                // Si escribió algo, lo encriptamos
+                // Spara encriptar
                 usuario.setPasswordHash(passwordEncoder.encode(usuario.getPassword()));
             }
         } else {
-            // 2. LOGICA PARA NUEVOS (Obligatorio contraseña)
+
             if (usuario.getPassword() != null && !usuario.getPassword().isEmpty()) {
                 usuario.setPasswordHash(passwordEncoder.encode(usuario.getPassword()));
             } else {
@@ -51,7 +51,7 @@ public class UsuarioService {
             }
         }
 
-        // 3. LOGICA DE ROLES (Por defecto USER)
+
         if (usuario.getRoles() == null || usuario.getRoles().isEmpty()) {
             if (usuario.getRoles() == null) usuario.setRoles(new HashSet<>());
             Role userRole = roleRepository.findByNombre("USER")
@@ -68,7 +68,7 @@ public class UsuarioService {
         return usuarioRepository.findById(id).orElse(null);
     }
 
-    // El metodo eliminar simple (El control de errores lo hacemos en el Controller)
+
     public void eliminar(Long id) {
         usuarioRepository.deleteById(id);
     }

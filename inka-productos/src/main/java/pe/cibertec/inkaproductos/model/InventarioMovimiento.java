@@ -28,7 +28,7 @@ public class InventarioMovimiento {
     private Producto producto;
 
     @ManyToOne
-    @JoinColumn(name = "unidad_id", nullable = false) // Requerido por la BD
+    @JoinColumn(name = "unidad_id", nullable = false)
     private Unidad unidad;
 
     @Enumerated(EnumType.STRING)

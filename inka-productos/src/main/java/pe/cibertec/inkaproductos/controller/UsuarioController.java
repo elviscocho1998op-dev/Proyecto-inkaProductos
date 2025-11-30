@@ -65,8 +65,7 @@ public class UsuarioController {
             usuarioService.eliminar(id);
             flash.addFlashAttribute("success", "Usuario eliminado con éxito.");
         } catch (Exception e) {
-            // ESTO EVITA QUE LA APP SE ROMPA
-            // Si el usuario tiene historial, la BD lanza excepción y caemos aquí:
+
             flash.addFlashAttribute("error", "No se puede eliminar el usuario: Tiene historial de compras o movimientos registrados.");
         }
         return "redirect:/usuarios";

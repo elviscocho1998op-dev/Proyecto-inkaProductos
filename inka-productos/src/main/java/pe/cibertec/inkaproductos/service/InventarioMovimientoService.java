@@ -22,11 +22,11 @@ public class InventarioMovimientoService {
     private InventarioService inventarioService;
 
     @Autowired
-    private UnidadRepository unidadRepository; // Para validaciones futuras
+    private UnidadRepository unidadRepository;
 
     @Transactional
     public InventarioMovimiento guardar(InventarioMovimiento movimiento) {
-        // 1. Validaciones básicas
+
         if (movimiento.getCantidad() == null || movimiento.getCantidad().compareTo(BigDecimal.ZERO) == 0) {
             throw new IllegalArgumentException("La cantidad no puede ser cero.");
         }

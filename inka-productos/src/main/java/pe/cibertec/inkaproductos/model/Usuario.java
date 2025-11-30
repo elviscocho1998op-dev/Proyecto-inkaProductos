@@ -27,7 +27,7 @@ public class Usuario {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Transient // No se guarda en BD, solo sirve para capturar el dato en el form
+    @Transient 
     private String password;
 
     private boolean enabled = true;

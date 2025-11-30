@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
-// CRUCIAL: Importamos la Entidad completa para poder usar la llave compuesta InventarioId
+
 import pe.cibertec.inkaproductos.model.Inventario;
 import pe.cibertec.inkaproductos.service.InventarioService;
 
@@ -32,7 +32,7 @@ public class InventarioRestController {
             @PathVariable Integer almacenId,
             @PathVariable Integer productoId
     ) {
-        // CORRECCIÓN: Ahora podemos crear la llave compuesta porque importamos la entidad Inventario
+
         Inventario.InventarioId id = new Inventario.InventarioId(almacenId, productoId);
 
         return inventarioService.obtenerPorId(id)

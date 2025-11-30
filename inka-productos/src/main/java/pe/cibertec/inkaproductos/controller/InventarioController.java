@@ -20,13 +20,13 @@ public class InventarioController {
     @Autowired
     private CategoriaService categoriaService;
 
-    // ✅ SOLUCIÓN AL ERROR: Declaración e inyección del servicio Almacen
+
     @Autowired
     private AlmacenService almacenService;
 
     @GetMapping
     public String listarInventario(
-            // Captura los parámetros del filtro de la URL
+            // Aqui captura lois datos
             @RequestParam(required = false) Integer almacenId,
             @RequestParam(required = false) Integer categoriaId,
             Model model

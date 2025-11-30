@@ -23,7 +23,7 @@ public class InventarioService {
     @Autowired
     private ProductoService productoService;
 
-    // Método 1: Listar con Filtros
+    // lista filtros
     public List<Inventario> listar(Integer almacenId, Integer categoriaId) {
         if (almacenId != null && categoriaId != null) {
             return repo.findByAlmacenAlmacenIdAndProductoCategoriaCategoriaId(almacenId, categoriaId);
@@ -35,12 +35,12 @@ public class InventarioService {
         return repo.findAll();
     }
 
-    // ✅ MÉTODO FALTANTE: Obtener por ID Compuesto
+    // obtiene el id
     public Optional<Inventario> obtenerPorId(InventarioId id) {
         return repo.findById(id);
     }
 
-    // Método 3: Actualizar Stock (Llamado por InventarioMovimientoService)
+    // aqui actualiza stock
     @Transactional
     public void actualizarStock(Integer almacenId, Integer productoId, BigDecimal cantidadCambio) {
         InventarioId id = new InventarioId(almacenId, productoId);

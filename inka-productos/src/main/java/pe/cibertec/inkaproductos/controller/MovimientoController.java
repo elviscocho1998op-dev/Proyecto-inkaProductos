@@ -16,7 +16,7 @@ public class MovimientoController {
 
     @GetMapping
     public String listarHistorial(Model model) {
-        // Usamos listarTodos() que ya creamos en el servicio (debe devolver la lista ordenada por fecha)
+        // Usamos listarTodos() ya esta en service ayuda a listar  los movimientos pendiente de solucionar
         model.addAttribute("movimientos", movimientoService.listarTodos());
         model.addAttribute("titulo", "Historial de Movimientos (Kardex)");
         return "inventario/historial";

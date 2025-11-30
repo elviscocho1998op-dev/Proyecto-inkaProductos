@@ -27,7 +27,7 @@ public class Unidad {
     @Column(name = "es_base")
     private boolean esBase = true;
 
-    // Agregamos abreviatura que estaba en tu código anterior
+
     @Column(unique = true)
     private String abreviatura;
 

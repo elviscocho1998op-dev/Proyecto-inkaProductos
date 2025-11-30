@@ -40,6 +40,6 @@ public class Producto {
     @Column(name = "creado_en", insertable = false, updatable = false)
     private LocalDateTime creadoEn;
 
-    @Transient // Solo para uso en vistas, no en BD
+    @Transient
     private BigDecimal cantidadInicial;
 }

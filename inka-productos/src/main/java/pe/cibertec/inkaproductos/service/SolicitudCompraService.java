@@ -18,7 +18,7 @@ public class SolicitudCompraService {
     @Autowired
     private InventarioMovimientoService movimientoService; // Para mover stock real
 
-    // Listar todo (Para Admin)
+    // Listar para admin
     public List<SolicitudCompra> listarTodas() {
         return repo.findAll();
     }
