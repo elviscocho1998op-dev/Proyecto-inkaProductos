@@ -6,7 +6,7 @@ import org.hibernate.annotations.NaturalId;
 
 @Data
 @Entity
-@Table(name = "role")
+@Table(name = "rol")
 public class Role {
 
     @Id
