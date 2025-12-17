@@ -22,6 +22,12 @@ import java.util.List;
 public class SecurityConfig {
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // Usuarios en memoria (Opción A)
+    @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
         UserDetails admin = User.builder()
                 .username("admin@inkaproductos.com")
@@ -45,35 +51,38 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        // 1. RUTA PÚBLICA PARA LOGIN
-                        .requestMatchers("/api/auth/login").permitAll()
+                        // Preflight CORS (Angular)
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 2. PERMITIR QUE TODOS VEAN LOS PRODUCTOS (SOLO LECTURA)
-                        // Importa HttpMethod de org.springframework.http.HttpMethod
+                        // 1) TRANSACCIONES: ADMIN y USER
+                        .requestMatchers("/api/productos/transaccion/**").hasAnyRole("ADMIN", "USER")
+
+                        // 2) HISTORIAL: solo ADMIN
+                        .requestMatchers("/api/productos/transaccion/historial").hasRole("ADMIN")
+
+                        // 3) MANTENIMIENTO PRODUCTOS: solo TI
+                        .requestMatchers(HttpMethod.POST, "/api/productos").hasRole("TI")
+                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("TI")
+                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("TI")
+
+                        // 4) CONSULTA GENERAL: público
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
 
-                        // 3. SOLO TI PUEDE MODIFICAR (POST, PUT, DELETE)
-                        .requestMatchers("/api/productos/**").hasRole("TI")
+                        // 5) TICKETS: solo TI
+                        .requestMatchers("/api/tickets/**").hasRole("TI")
 
-                        // Resto de tus reglas...
-                        .requestMatchers("/api/tickets/**").hasAnyRole("ADMIN", "TI")
+                        // Todo lo demás requiere autenticación
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
+
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
@@ -85,9 +94,5 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
-
     }
-
-
-
 }
