@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5df9643c-2982-476f-803d-46aa0635cc36" name="Changes" comment="Add.Filtrado.Categorias.productos" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;elviscocho1998op-dev&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/elviscocho1998op-dev/Proyecto-inkaProductos.git&quot;,
+    &quot;accountId&quot;: &quot;532b8c0f-da3f-48d6-b58f-7676e8268468&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="36O78UvfRY9nnLtWz7Ww3yn83Ar" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.InkaProductosApplication.executor": "Debug",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.InkaProductosApplication.executor": "Run",
+    "git-widget-placeholder": "Jelias",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\HP\Documents\Proyecto DAWI-INKA\inka-productos\src\main\java\pe\cibertec\inkaproductos\dbaInka" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="InkaProductosApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="inka-productos" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="pe.cibertec.inkaproductos.InkaProductosApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.27397.103" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5df9643c-2982-476f-803d-46aa0635cc36" name="Changes" comment="" />
+      <created>1764865606079</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1764865606079</updated>
+      <workItem from="1764865607510" duration="18782000" />
+      <workItem from="1765170584149" duration="531000" />
+      <workItem from="1765405884199" duration="2847000" />
+      <workItem from="1765572415283" duration="5146000" />
+      <workItem from="1765724801262" duration="12770000" />
+      <workItem from="1765838397082" duration="27000" />
+    </task>
+    <task id="LOCAL-00001" summary="Add.database">
+      <option name="closed" value="true" />
+      <created>1764867847261</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1764867847261</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Reconfiguration.all.proyect">
+      <option name="closed" value="true" />
+      <created>1765926822240</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1765926822240</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Reconfiguration.all.proyect">
+      <option name="closed" value="true" />
+      <created>1765926838171</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1765926838171</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Merge remote-tracking branch 'origin/Jelias' into Jelias">
+      <option name="closed" value="true" />
+      <created>1765926871620</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1765926871620</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Add.Filtrado.Categorias.productos">
+      <option name="closed" value="true" />
+      <created>1765941240841</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1765941240841</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Add.Filtrado.Categorias.productos">
+      <option name="closed" value="true" />
+      <created>1765941286856</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1765941286856</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Add.database" />
+    <MESSAGE value="Reconfiguration.all.proyect" />
+    <MESSAGE value="Reconfiguration.all.proyect.v1" />
+    <MESSAGE value="Merge remote-tracking branch 'origin/Jelias' into Jelias" />
+    <MESSAGE value="Add.Filtrado.Categorias.productos" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add.Filtrado.Categorias.productos" />
+  </component>
+</project>
