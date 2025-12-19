@@ -1,21 +1,21 @@
 package pe.cibertec.inkaproductos.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "movimiento_detalle")
-@Data
-@NoArgsConstructor @AllArgsConstructor
-@Builder
 public class MovimientoDetalle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "movimiento_id")
+    @JsonBackReference
     private Movimiento movimiento;
 
     @ManyToOne

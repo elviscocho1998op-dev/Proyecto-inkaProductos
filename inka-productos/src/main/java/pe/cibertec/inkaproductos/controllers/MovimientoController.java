@@ -13,11 +13,17 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 public class MovimientoController {
 
-    private final MovimientoService movimientoRepo;
+    private final MovimientoService movimientoService;
 
-    @GetMapping("/movimientos")
-    public List<Movimiento> listarMovimientos() {
-        return movimientoRepo.listarHistorial();
+
+    @GetMapping("/historial")
+    public List<Movimiento> historial() {
+        return movimientoService.listarHistorial();
     }
 
+
+    @GetMapping("/{id}/detalles")
+    public List<?> detalles(@PathVariable Integer id) {
+        return movimientoService.listarDetalles(id);
+    }
 }

@@ -9,7 +9,6 @@ public class TransaccionDTO {
     private Integer origenId;
     private Integer destinoId;
 
-
     private String usuarioEmail;
     private boolean esAdmin;
 

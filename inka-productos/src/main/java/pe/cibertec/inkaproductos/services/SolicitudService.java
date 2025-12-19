@@ -19,17 +19,9 @@ public class SolicitudService {
     private final AlmacenRepository repoAlmacen;
     private final ProductoRepository repoProducto;
 
-    // ⭐ NECESARIOS PARA APROBAR
-    private final MovimientoRepository repoMovimiento;
-    private final MovimientoDetalleRepository repoMovimientoDetalle;
-
-    // ⭐ USAMOS AJUSTAR STOCK DEL PRODUCTO SERVICE
-    private final ProductoService productoService;
-
-
-    // ============================================================
-    //                      CREAR SOLICITUD (USER)
-    // ============================================================
+    // =====================
+    // USER crea solicitud
+    // =====================
     @Transactional
     public SolicitudCompra crearSolicitud(TransaccionDTO dto) {
 
@@ -42,7 +34,6 @@ public class SolicitudService {
         if (dto.getItems() == null || dto.getItems().isEmpty())
             throw new RuntimeException("La solicitud está vacía");
 
-        // CABECERA
         SolicitudCompra sc = new SolicitudCompra();
         sc.setOrigen(repoAlmacen.findById(dto.getOrigenId()).orElseThrow());
         sc.setDestino(repoAlmacen.findById(dto.getDestinoId()).orElseThrow());
@@ -51,7 +42,6 @@ public class SolicitudService {
 
         sc = repoSolicitud.save(sc);
 
-        // DETALLES
         List<SolicitudCompraDetalle> detalles = new ArrayList<>();
 
         for (var item : dto.getItems()) {
@@ -63,14 +53,9 @@ public class SolicitudService {
         }
 
         repoDetalle.saveAll(detalles);
-
         return sc;
     }
 
-
-    // ============================================================
-    //                     LISTADOS
-    // ============================================================
     public List<SolicitudCompra> listarPorUsuario(String email) {
         return repoSolicitud.findByUsuarioSolicitante(email);
     }
@@ -78,58 +63,4 @@ public class SolicitudService {
     public List<SolicitudCompra> listarPendientes() {
         return repoSolicitud.findByEstado("PENDIENTE");
     }
-
-
-    // ============================================================
-    //                      APROBAR SOLICITUD (ADMIN)
-    // ============================================================
-    @Transactional
-    public Movimiento aprobarSolicitud(Integer solicitudId) {
-
-        SolicitudCompra sol = repoSolicitud.findById(solicitudId)
-                .orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
-
-        if (!sol.getEstado().equals("PENDIENTE"))
-            throw new RuntimeException("La solicitud ya fue procesada");
-
-        // 1) Cambiar estado de la solicitud
-        sol.setEstado("APROBADA");
-        repoSolicitud.save(sol);
-
-        // 2) Crear movimiento asociado
-        Movimiento mov = new Movimiento();
-        mov.setUsuario(sol.getUsuarioSolicitante());
-        mov.setOrigen(sol.getOrigen());
-        mov.setDestino(sol.getDestino());
-        mov.setEstado(Movimiento.EstadoMovimiento.APROBADO);
-
-        mov = repoMovimiento.save(mov);
-
-        // 3) Registrar detalles y mover stock real
-        for (SolicitudCompraDetalle d : sol.getDetalles()) {
-
-            // Registrar detalle del movimiento
-            MovimientoDetalle md = new MovimientoDetalle();
-            md.setMovimiento(mov);
-            md.setProducto(d.getProducto());
-            md.setCantidad(d.getCantidad());
-            repoMovimientoDetalle.save(md);
-
-            // ⭐ MOVER STOCK REAL (USAMOS TU MÉTODO ORIGINAL) ⭐
-            productoService.moverStock(
-                    sol.getOrigen().getAlmacenId(),
-                    d.getProducto().getProductoId(),
-                    -d.getCantidad()  // Descontar
-            );
-
-            productoService.moverStock(
-                    sol.getDestino().getAlmacenId(),
-                    d.getProducto().getProductoId(),
-                    d.getCantidad()   // Sumar
-            );
-        }
-
-        return mov;
-    }
-
 }
