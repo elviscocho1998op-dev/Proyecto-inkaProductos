@@ -2,10 +2,16 @@ package pe.cibertec.inkaproductos.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import pe.cibertec.inkaproductos.dto.ProductoDTO;
+import pe.cibertec.inkaproductos.dto.TransaccionDTO;
 import pe.cibertec.inkaproductos.models.Producto;
 import pe.cibertec.inkaproductos.services.ProductoService;
+
+import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -33,10 +39,31 @@ public class ProductoController {
     }
 
     @GetMapping("/filtrar")
-    public List<Producto> filtrarProductos(
+    public List<ProductoDTO> filtrarProductos(
             @RequestParam(required = false) Integer categoriaId,
             @RequestParam(required = false) Integer almacenId
     ) {
-        return productoService.filtrar(categoriaId, almacenId);
+        return productoService.filtrarProductos(categoriaId, almacenId);
     }
+
+    @PostMapping("/transaccion")
+    public ResponseEntity<?> procesarTransaccion(@RequestBody TransaccionDTO dto,
+                                                 Principal principal) {
+
+        try {
+            dto.setEsAdmin(true);
+            dto.setUsuarioEmail(principal.getName()); // <-- ESTA ES LA CLAVE 🔥
+
+            productoService.procesarTransaccion(dto);
+
+            return ResponseEntity.ok(Map.of("mensaje", "Transacción registrada"));
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
+
+
 }

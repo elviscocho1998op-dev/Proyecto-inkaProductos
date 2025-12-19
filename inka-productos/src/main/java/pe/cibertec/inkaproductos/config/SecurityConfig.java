@@ -1,28 +1,33 @@
 package pe.cibertec.inkaproductos.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
 @Configuration
 public class SecurityConfig {
 
+    // ============================
+    // USERS EN MEMORIA
+    // ============================
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
+    public UserDetailsService userDetailsService() {
+
+        PasswordEncoder encoder = passwordEncoder();
+
         UserDetails admin = User.builder()
                 .username("admin@inkaproductos.com")
                 .password(encoder.encode("admin123"))
@@ -49,45 +54,83 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // ============================
+    // AUTH PROVIDER
+    // ============================
+    @Bean
+    public AuthenticationProvider authProvider(UserDetailsService uds) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(uds);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
 
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http,
+                                                       AuthenticationProvider provider)
+            throws Exception {
 
+        AuthenticationManagerBuilder builder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        builder.authenticationProvider(provider);
+
+        return builder.build();
+    }
+
+    // ============================
+    // SECURITY FILTER CHAIN
+    // ============================
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth
-                        // 1. RUTA PÚBLICA PARA LOGIN
-                        .requestMatchers("/api/auth/login").permitAll()
 
-                        // 2. PERMITIR QUE TODOS VEAN LOS PRODUCTOS (SOLO LECTURA)
-                        // Importa HttpMethod de org.springframework.http.HttpMethod
-                        .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+        // CORS
+        http.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(List.of("http://localhost:4200"));
+            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            config.setAllowedHeaders(List.of("*"));
+            config.setAllowCredentials(true);
+            return config;
+        }));
 
-                        // 3. SOLO TI PUEDE MODIFICAR (POST, PUT, DELETE)
-                        .requestMatchers("/api/productos/**").hasRole("TI")
+        // CSRF OFF para SPA (Angular)
+        http.csrf(csrf -> csrf.disable());
 
-                        // Resto de tus reglas...
-                        .requestMatchers("/api/tickets/**").hasAnyRole("ADMIN", "TI")
-                        .anyRequest().authenticated()
-                )
-                .httpBasic(Customizer.withDefaults())
-                .build();
+        // RULES
+        http.authorizeHttpRequests(auth -> auth
+
+                // LOGIN libre
+                .requestMatchers("/api/auth/login").permitAll()
+
+                // Preflight
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // Públicos
+                .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/almacenes/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+
+                // USER
+                .requestMatchers(HttpMethod.POST, "/api/solicitudes").hasRole("USER")
+                .requestMatchers(HttpMethod.GET, "/api/solicitudes/mias").hasRole("USER")
+
+                // ADMIN
+                .requestMatchers(HttpMethod.POST, "/api/productos/transaccion").hasRole("ADMIN")
+                .requestMatchers("/api/aprobaciones/**").hasRole("ADMIN")
+
+                // TI
+                .requestMatchers(HttpMethod.POST, "/api/productos").hasRole("TI")
+                .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("TI")
+                .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("TI")
+
+                // Todo lo demás requiere login
+                .anyRequest().authenticated()
+        );
+
+        // 🔥 FUNDAMENTAL PARA QUE ANGULAR + BASIC AUTH FUNCIONE
+        http.httpBasic(Customizer.withDefaults());
+
+        return http.build();
     }
-    @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-
-    }
-
-
-
 }

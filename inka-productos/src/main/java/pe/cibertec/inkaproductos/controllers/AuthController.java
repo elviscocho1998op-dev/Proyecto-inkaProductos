@@ -1,33 +1,41 @@
 package pe.cibertec.inkaproductos.controllers;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import pe.cibertec.inkaproductos.dto.LoginRequest;
-import pe.cibertec.inkaproductos.models.Usuario;
-import pe.cibertec.inkaproductos.services.UsuarioService;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200") // Para Angular
+@RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
 
-    private final UsuarioService usuarioService;
-
-    // Constructor manual como el del profesor
-    public AuthController(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+    private final AuthenticationManager authManager;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        // Usamos el método login del service
-        Usuario usuario = usuarioService.login(loginRequest.getEmail(), loginRequest.getPassword());
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
 
-        if (usuario == null) {
-            return ResponseEntity.status(401).body("Credenciales inválidas");
-        }
+        String email = body.get("email");
+        String password = body.get("password");
 
-        // Devolvemos el objeto usuario (Spring lo convierte a JSON automáticamente)
-        return ResponseEntity.ok(usuario);
+        Authentication auth = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        String rol = auth.getAuthorities().iterator().next().getAuthority();
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "email", email,
+                        "rol", rol
+                )
+        );
     }
 }
