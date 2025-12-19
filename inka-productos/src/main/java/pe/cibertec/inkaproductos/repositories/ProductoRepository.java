@@ -18,12 +18,4 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 
     // Listar productos activos
     List<Producto> findByActivo(Integer activo);
-
-    @Query("SELECT p FROM Producto p " +
-            "WHERE (:categoriaId IS NULL OR p.categoria.categoriaId = :categoriaId) " +
-            "AND (:almacenId IS NULL OR EXISTS (SELECT i FROM Inventario i WHERE i.producto = p AND i.almacen.almacenId = :almacenId))")
-    List<Producto> filtrarProductos(
-            @Param("categoriaId") Integer categoriaId,
-            @Param("almacenId") Integer almacenId
-    );
 }

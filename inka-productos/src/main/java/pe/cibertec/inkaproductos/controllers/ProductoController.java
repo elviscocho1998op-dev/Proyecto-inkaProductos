@@ -31,12 +31,4 @@ public class ProductoController {
         productoService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/filtrar")
-    public List<Producto> filtrarProductos(
-            @RequestParam(required = false) Integer categoriaId,
-            @RequestParam(required = false) Integer almacenId
-    ) {
-        return productoService.filtrar(categoriaId, almacenId);
-    }
 }
