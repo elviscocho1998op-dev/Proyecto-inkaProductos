@@ -23,12 +23,24 @@ public interface InventarioRepository extends JpaRepository<Inventario, Inventar
     );
 
 
-    @Modifying
-    @Query("UPDATE Inventario i SET i.cantidad = i.cantidad + :cantidad " +
-            "WHERE i.almacen.almacenId = :almacenId AND i.producto.productoId = :productoId")
-    void actualizarCantidad(
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+UPDATE Inventario i
+SET i.cantidad = i.cantidad + :cantidad
+WHERE i.almacen.almacenId = :almacenId
+  AND i.producto.productoId = :productoId
+""")
+    int actualizarCantidad(
             @Param("almacenId") Integer almacenId,
             @Param("productoId") Integer productoId,
             @Param("cantidad") Double cantidad
     );
+
+    @Query("SELECT i FROM Inventario i WHERE i.almacen.almacenId = :almacenId AND (:categoriaId IS NULL OR i.producto.categoria.categoriaId = :categoriaId)")
+    List<Inventario> filtrarInventario(
+            @Param("almacenId") Integer almacenId,
+            @Param("categoriaId") Integer categoriaId
+
+    );
+
 }

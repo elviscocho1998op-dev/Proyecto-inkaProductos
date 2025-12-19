@@ -1,34 +1,33 @@
 package pe.cibertec.inkaproductos.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 
 @Configuration
 public class SecurityConfig {
 
+    // ============================
+    // USUARIOS EN MEMORIA
+    // ============================
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    public UserDetailsService userDetailsService() {
 
-    // Usuarios en memoria (Opción A)
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
+        PasswordEncoder encoder = passwordEncoder();
+
         UserDetails admin = User.builder()
                 .username("admin@inkaproductos.com")
                 .password(encoder.encode("admin123"))
@@ -51,48 +50,86 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .authorizeHttpRequests(auth -> auth
-                        // Preflight CORS (Angular)
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-                        // 1) TRANSACCIONES: ADMIN y USER
-                        .requestMatchers("/api/productos/transaccion/**").hasAnyRole("ADMIN", "USER")
+    // ============================
+    // AUTENTICACIÓN
+    // ============================
+    @Bean
+    public AuthenticationProvider authProvider(UserDetailsService uds) {
 
-                        // 2) HISTORIAL: solo ADMIN
-                        .requestMatchers("/api/productos/transaccion/historial").hasRole("ADMIN")
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(uds);
+        provider.setPasswordEncoder(passwordEncoder());
 
-                        // 3) MANTENIMIENTO PRODUCTOS: solo TI
-                        .requestMatchers(HttpMethod.POST, "/api/productos").hasRole("TI")
-                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("TI")
-                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("TI")
-
-                        // 4) CONSULTA GENERAL: público
-                        .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
-
-                        // 5) TICKETS: solo TI
-                        .requestMatchers("/api/tickets/**").hasRole("TI")
-
-                        // Todo lo demás requiere autenticación
-                        .anyRequest().authenticated()
-                )
-                .httpBasic(Customizer.withDefaults())
-                .build();
+        return provider;
     }
 
     @Bean
-    public CorsFilter corsFilter() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    public AuthenticationManager authenticationManager(HttpSecurity http,
+                                                       AuthenticationProvider provider)
+            throws Exception {
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        AuthenticationManagerBuilder builder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        builder.authenticationProvider(provider);
+
+        return builder.build();
     }
+
+    // ============================
+    // CONFIG DE SEGURIDAD
+    // ============================
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowedOrigins(List.of("http://localhost:4200"));
+            config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+            config.setAllowedHeaders(List.of("*"));
+            config.setAllowCredentials(true);
+            return config;
+        }));
+
+        http.csrf(csrf -> csrf.disable());
+
+        http.authorizeHttpRequests(auth -> auth
+                // Login libre
+                .requestMatchers("/api/auth/login").permitAll()
+
+                // Preflight
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // Públicos
+                .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/almacenes/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+
+                // USER
+                .requestMatchers(HttpMethod.POST, "/api/solicitudes").hasRole("USER")
+                .requestMatchers(HttpMethod.GET, "/api/solicitudes/mias").hasRole("USER")
+
+                // ADMIN
+                .requestMatchers(HttpMethod.POST, "/api/productos/transaccion").hasRole("ADMIN")
+
+                // TI
+                .requestMatchers(HttpMethod.POST, "/api/productos").hasRole("TI")
+                .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("TI")
+                .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("TI")
+
+                // Todo lo demás requiere autenticación
+                .anyRequest().authenticated()
+        );
+
+        // 🔥 OBLIGATORIO PARA QUE FUNCIONE BASIC AUTH CON ANGULAR
+        http.httpBasic(Customizer.withDefaults());
+
+        return http.build();
+    }
+
+
 }

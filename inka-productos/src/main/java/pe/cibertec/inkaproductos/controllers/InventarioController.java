@@ -18,4 +18,12 @@ public class InventarioController {
     public List<Inventario> listarPorAlmacen(@PathVariable Integer idAlmacen) {
         return inventarioService.listarPorAlmacen(idAlmacen);
     }
+
+    @GetMapping("/filtrar")
+    public List<Inventario> filtrar(
+            @RequestParam Integer almacenId,
+            @RequestParam(required = false) Integer categoriaId
+    ) {
+        return inventarioService.filtrar(almacenId, categoriaId);
+    }
 }

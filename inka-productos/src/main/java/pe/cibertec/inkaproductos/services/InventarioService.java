@@ -15,4 +15,8 @@ public class InventarioService {
     public List<Inventario> listarPorAlmacen(Integer idAlmacen) {
         return inventarioRepository.listarPorAlmacen(idAlmacen);
     }
+
+    public List<Inventario> filtrar(Integer almacenId, Integer categoriaId) {
+        return inventarioRepository.filtrarInventario(almacenId, categoriaId);
+    }
 }
