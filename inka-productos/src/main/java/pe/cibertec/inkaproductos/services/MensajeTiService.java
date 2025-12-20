@@ -15,7 +15,7 @@ public class MensajeTiService {
     private final MensajeTiRepository mensajeTiRepository;
 
     public List<MensajeTi> obtenerPendientes() {
-        return mensajeTiRepository.findByEstadoOrderByPrioridadDesc("PENDIENTE");
+        return mensajeTiRepository.findByEstado("PENDIENTE");
     }
 
     @Transactional
