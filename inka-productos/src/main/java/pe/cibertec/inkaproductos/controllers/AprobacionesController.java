@@ -17,32 +17,35 @@ public class AprobacionesController {
 
     private final AprobacionService aprobacionService;
 
+    // LISTAR PENDIENTES
     @GetMapping("/pendientes")
     public List<SolicitudCompra> pendientes() {
         return aprobacionService.listarPendientes();
     }
 
-
-    @PutMapping("/{id}/rechazar")
+    // RECHAZAR
+    @PutMapping("/rechazar/{id}")
     public ResponseEntity<?> rechazar(@PathVariable Integer id) {
-        return ResponseEntity.ok(aprobacionService.rechazar(id));
+        return ResponseEntity.ok(
+                Map.of("mensaje", "Solicitud rechazada",
+                        "solicitud", aprobacionService.rechazar(id))
+        );
     }
 
-    @PutMapping("/{id}/aprobar")
+    // APROBAR
+    @PutMapping("/aprobar/{id}")
     public ResponseEntity<?> aprobar(@PathVariable Integer id) {
-
         try {
             SolicitudCompra aprobada = aprobacionService.aprobar(id);
 
             return ResponseEntity.ok(
-                    Map.of("mensaje", "Solicitud aprobada", "solicitud", aprobada)
+                    Map.of("mensaje", "Solicitud aprobada",
+                            "solicitud", aprobada)
             );
-
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                     Map.of("error", e.getMessage())
             );
         }
     }
-
 }
