@@ -53,10 +53,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    // ============================
     // AUTH PROVIDER
-    // ============================
     @Bean
     public AuthenticationProvider authProvider(UserDetailsService uds) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
@@ -78,9 +75,8 @@ public class SecurityConfig {
         return builder.build();
     }
 
-    // ============================
     // SECURITY FILTER CHAIN
-    // ============================
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -128,9 +124,11 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
         );
 
-        // 🔥 FUNDAMENTAL PARA QUE ANGULAR + BASIC AUTH FUNCIONE
+
         http.httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
+
+
 }

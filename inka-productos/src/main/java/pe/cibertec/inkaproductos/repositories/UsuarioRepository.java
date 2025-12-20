@@ -11,4 +11,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     // Verifica si el correo existe antes de registrar
     boolean existsByEmail(String email);
+
+
 }

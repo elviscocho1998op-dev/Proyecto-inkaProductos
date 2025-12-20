@@ -8,8 +8,7 @@ import java.util.List;
 @Repository
 public interface MensajeTiRepository extends JpaRepository<MensajeTi, Integer> {
 
-    // TI ordena por prioridad para saber qué atender primero
-    List<MensajeTi> findByEstadoOrderByPrioridadDesc(String estado);
 
-    List<MensajeTi> findByEmisorOrderByFechaEnvioDesc(String email);
+
+    List<MensajeTi> findByEstado(String estado);
 }
