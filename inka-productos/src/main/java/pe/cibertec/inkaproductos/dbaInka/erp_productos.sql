@@ -97,11 +97,41 @@ CREATE TABLE mensaje_ti (
     version INT DEFAULT 0,
     PRIMARY KEY (mensaje_id)
 ) ENGINE=InnoDB;
+
+
+
+CREATE TABLE movimiento (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    usuario VARCHAR(60) NOT NULL,
+
+    origen_id INT UNSIGNED NOT NULL,
+    destino_id INT UNSIGNED NOT NULL,
+
+    estado ENUM('APROBADO','RECHAZADO','PENDIENTE') DEFAULT 'APROBADO',
+
+    FOREIGN KEY (origen_id) REFERENCES almacen (almacen_id),
+    FOREIGN KEY (destino_id) REFERENCES almacen (almacen_id)
+) ENGINE=InnoDB;
+
+
+
+CREATE TABLE movimiento_detalle (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    movimiento_id INT UNSIGNED NOT NULL,
+    producto_id INT UNSIGNED NOT NULL,
+    cantidad DECIMAL(18,2) NOT NULL,
+
+    FOREIGN KEY (movimiento_id) REFERENCES movimiento(id),
+    FOREIGN KEY (producto_id) REFERENCES producto(producto_id)
+) ENGINE=InnoDB;
+
+
 -- ==========================================================
 -- DATA DE PRUEBA
 -- ==========================================================
 
--- Roles y Usuarios (Pass: 123456)
+-- Roles y Usuarios 
 INSERT INTO rol (nombre) VALUES ('ADMIN'), ('USER'), ('TI');
 INSERT INTO usuario (nombre, email, password_hash) VALUES
 ('Admin', 'admin@inkaproductos.com', '$2a$10$M9qdWivDupim72L.lJqwsu26v8RKD9HtOi8gXzb0V1C5LwbUjmgVe'),
@@ -216,3 +246,10 @@ ON (a.almacen_id = 1 AND p.sku LIKE 'LIMA%')
 OR (a.almacen_id = 2 AND p.sku LIKE 'SUR%')
 OR (a.almacen_id = 3 AND p.sku LIKE 'NOR%')
 OR (a.almacen_id = 4 AND p.sku LIKE 'CALL%');
+
+
+
+
+
+
+
