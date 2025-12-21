@@ -13,5 +13,11 @@ public class ProductoDTO {
     private String sku;
     private String nombre;
     private String descripcion;
+    private Double precioLista;
+    private Integer activo;
+
+    private Integer categoriaId;
+    private String categoriaNombre;
+
     private Double stock;
 }

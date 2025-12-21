@@ -18,22 +18,19 @@ import java.util.List;
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
-    private final SolicitudCompraRepository solicitudRepo;
-    private final SolicitudDetalleRepository detalleRepo;
     private final InventarioRepository inventarioRepo;
     private final MovimientoService movimientoService;
 
-
-    // ============================================
-    // LISTAR TODOS LOS PRODUCTOS
-    // ============================================
+    // ===============================
+    // LISTAR
+    // ===============================
     public List<Producto> listarTodos() {
         return productoRepository.findAll();
     }
 
-    // ============================================
+    // ===============================
     // CRUD
-    // ============================================
+    // ===============================
     public Producto guardar(Producto producto) {
         return productoRepository.save(producto);
     }
@@ -42,20 +39,19 @@ public class ProductoService {
         productoRepository.deleteById(id);
     }
 
-    // ============================================
-    // FILTRO USADO POR ANGULAR → retorna DTO
-    // ============================================
+    // ===============================
+    // FILTRAR PARA ANGULAR
+    // ===============================
     public List<ProductoDTO> filtrarProductos(Integer categoriaId, Integer almacenId) {
 
         Integer cat = (categoriaId != null && categoriaId > 0) ? categoriaId : null;
         Integer alm = (almacenId != null && almacenId > 0) ? almacenId : null;
 
         List<Producto> productos;
+
         if (alm == null) {
             productos = productoRepository.filtrarProductos(cat);
-        }
-        else {
-
+        } else {
             var inventarios = inventarioRepo.filtrarInventario(alm, cat);
 
             productos = inventarios.stream()
@@ -64,22 +60,24 @@ public class ProductoService {
                     .toList();
         }
 
-        // Convertir a DTO
         return productos.stream()
                 .map(p -> new ProductoDTO(
                         p.getProductoId(),
                         p.getSku(),
                         p.getNombre(),
+                        p.getDescripcion(),
+                        p.getPrecioLista(),
+                        p.getActivo(),
+                        p.getCategoria() != null ? p.getCategoria().getCategoriaId() : null,
                         p.getCategoria() != null ? p.getCategoria().getNombre() : null,
                         obtenerStockTotal(p)
                 ))
                 .toList();
     }
 
-
-    // ============================================
-    // OBTENER STOCK TOTAL DEL PRODUCTO
-    // ============================================
+    // ===============================
+    // CALCULAR STOCK TOTAL
+    // ===============================
     private Double obtenerStockTotal(Producto p) {
         return inventarioRepo.findByProducto(p)
                 .stream()
@@ -87,39 +85,6 @@ public class ProductoService {
                 .sum();
     }
 
-    // ============================================
-    // TRANSACCIÓN REAL (ADMIN)
-    // ============================================
-    @Transactional
-    public void procesarTransaccion(TransaccionDTO dto) {
-
-        if (!dto.isEsAdmin()) {
-            throw new RuntimeException("Solo el administrador puede realizar movimientos directos.");
-        }
-
-        // Primero mover stock REAL
-        for (ItemCarritoDTO item : dto.getItems()) {
-            moverStock(
-                    dto.getOrigenId(),
-                    dto.getDestinoId(),
-                    item.getProductoId(),
-                    item.getCantidad()
-            );
-        }
-
-        // Luego registrar el movimiento en historial
-        movimientoService.registrarMovimiento(
-                dto.getUsuarioEmail(),
-                dto.getOrigenId(),
-                dto.getDestinoId(),
-                dto.getItems()
-        );
-    }
-
-
-    // ============================================
-    // AJUSTAR STOCK (PÚBLICO)
-    // ============================================
     @Transactional
     public void ajustarStock(Integer almacenId, Integer productoId, Double delta) {
 
@@ -161,4 +126,31 @@ public class ProductoService {
         ajustarStock(origenId, productoId, -cantidad);
         ajustarStock(destinoId, productoId, cantidad);
     }
+
+    @Transactional
+    public void procesarTransaccion(TransaccionDTO dto) {
+
+        if (!dto.isEsAdmin()) {
+            throw new RuntimeException("Solo el administrador puede realizar movimientos directos.");
+        }
+
+        // Primero mover stock REAL
+        for (ItemCarritoDTO item : dto.getItems()) {
+            moverStock(
+                    dto.getOrigenId(),
+                    dto.getDestinoId(),
+                    item.getProductoId(),
+                    item.getCantidad()
+            );
+        }
+
+        // Luego registrar el movimiento en historial
+        movimientoService.registrarMovimiento(
+                dto.getUsuarioEmail(),
+                dto.getOrigenId(),
+                dto.getDestinoId(),
+                dto.getItems()
+        );
+    }
+
 }
