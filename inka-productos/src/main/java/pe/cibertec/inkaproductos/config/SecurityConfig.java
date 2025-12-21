@@ -116,9 +116,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/aprobaciones/**").hasRole("ADMIN")
 
                 // TI
-                .requestMatchers(HttpMethod.POST, "/api/productos").hasRole("TI")
-                .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("TI")
-                .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("TI")
+
+                .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole("TI")
+                .requestMatchers(HttpMethod.POST, "/api/usuarios/**").hasRole("TI")
+                .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole("TI")
+                .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole("TI")
+
 
                 // Todo lo demás requiere login
                 .anyRequest().authenticated()

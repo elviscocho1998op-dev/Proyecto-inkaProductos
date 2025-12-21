@@ -70,11 +70,22 @@ public class UsuarioService {
         Rol rol = rolRepository.findByNombre(rolNuevo)
                 .orElseThrow(() -> new RuntimeException("Rol no existe"));
 
-        // LISTA MUTABLE (LA PARTE CRÍTICA)
-        u.setRoles(new ArrayList<>(List.of(rol)));
+        // Crear lista si viene null
+        if (u.getRoles() == null) {
+            u.setRoles(new ArrayList<>());
+        }
+
+        // Evitar duplicados
+        boolean yaTiene = u.getRoles().stream()
+                .anyMatch(r -> r.getNombre().equalsIgnoreCase(rolNuevo));
+
+        if (!yaTiene) {
+            u.getRoles().add(rol);
+        }
 
         return usuarioRepository.save(u);
     }
+
 
     // ELIMINAR
     public void eliminar(Long id) {

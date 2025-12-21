@@ -1,7 +1,5 @@
 package pe.cibertec.inkaproductos.models;
 
-
-
 import jakarta.persistence.*;
 
 import lombok.Data;
